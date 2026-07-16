@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.so
+
+# venv / dependency lock
+.venv/
+uv.lock
+
+# Data (raw downloads + processed cache)
+data/raw/
+data/processed/
+*.parquet
+*.jsonl
+*.jsonl.gz
+*.csv
+
+# Model checkpoints (multi-GB binaries — not git-friendly; logs/ IS tracked,
+# since ExperimentLogger's config.json/debug.log/metrics.json are lightweight
+# and are the audit trail for what actually produced a reported number)
+checkpoints/
+wandb/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+
+# HuggingFace cache
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editor settings
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+
+logs_*/
+checkpoints_*/
+
+# LaTeX build artifacts (compiled main.pdf is tracked; these are regenerated
+# by pdflatex/latexmk on every compile). Scoped to paper*/ so this doesn't
+# touch logs/*/debug.log, which is tracked on purpose (see above).
+paper*/*.aux
+paper*/*.bbl
+paper*/*.blg
+paper*/*.fdb_latexmk
+paper*/*.fls
+paper*/*.log
+paper*/*.out
+paper*/*.synctex.gz
+

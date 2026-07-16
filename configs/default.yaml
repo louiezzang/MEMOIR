@@ -1,0 +1,61 @@
+seed: 42
+
+data:
+  dataset: amazon  # amazon, mind, movielens
+  data_dir: ./data/raw
+  processed_dir: ./data/processed
+  max_history_len: 50
+  time_window: monthly  # monthly, weekly, quarterly
+  min_interactions: 5
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+
+model:
+  llm_name: TinyLlama/TinyLlama-1.1B-Chat-v1.0
+  llm_load_in_4bit: false  # true requires NVIDIA GPU + bitsandbytes. false for MPS/CPU (uses FP32/FP16)
+  freeze_llm: true        # true = freeze LLM, pre-cache all window embeddings; much faster on MPS/CPU
+  embedding_dim: 256
+  memory_dim: 768
+  num_memory_windows: 6
+  retrieval_top_k: 50
+  reasoning_top_k: 10
+  dropout: 0.1  # baseline value — MEMOIR's regularization tuning (0.2) lives in configs/memoir.yaml, not here, since baselines/train_baseline.py also reads this file
+  temperature: 0.07  # contrastive temperature τ
+  trajectory_gru_layers: 1  # GRU layers for TrajectoryPredictor
+
+  item_encoder:
+    type: bert  # bert, bge
+    pretrained: sentence-transformers/all-MiniLM-L6-v2
+
+training:
+  epochs: 100
+  early_stopping_patience: 15  # stop if val NDCG@10 doesn't improve for this many epochs
+  batch_size: 16
+  lr: 0.0001
+  llm_lr: 0.00001
+  projection_lr: 0.00001  # LR for memory_encoder.projection — kept low since it's newly-live under freeze_llm caching
+  weight_decay: 0.01  # baseline value — MEMOIR's regularization tuning (0.05) lives in configs/memoir.yaml
+  label_smoothing: 0.0  # unused by baselines; MEMOIR's validated value (0.1) lives in configs/memoir.yaml
+  warmup_steps: 1000
+  max_grad_norm: 1.0
+  lambda_evo: 0.5       # λ1: evolution contrastive loss weight
+  lambda_consistency: 0.3  # λ2: behavioral consistency loss weight
+  lambda_extrap: 0.3      # λ3: trajectory extrapolation loss weight
+  alpha_direction: 0.2  # α: directional consistency term
+  margin: 0.1           # margin for directional loss
+  gradient_accumulation_steps: 8
+  fp16: true
+
+eval:
+  metrics: [hr, ndcg, mrr, recall]
+  ks: [5, 10, 20]
+  eval_every: 1  # epochs
+  eval_seed: 42  # fixed seed for reproducible negative sampling
+
+logging:
+  project: memoir
+  log_dir: ./logs
+  save_dir: ./checkpoints
+  save_every: 5
+  wandb_enabled: false
