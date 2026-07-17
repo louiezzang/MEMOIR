@@ -41,25 +41,9 @@ MEMOIR combines four components into a unified sequential recommendation framewo
 
 ### Architecture
 
-```
-User History
-     │
-     ▼
-Temporal Segmentation (monthly / weekly / quarterly windows)
-     │
-     ▼
-LLM Memory Encoder (TinyLlama + LoRA  or  frozen + cached)
-     │
-     ▼
-Trajectory Predictor (GRU) ──► Evolution-Aware Aggregation
-     │
-     ├── Evolution Contrastive Loss
-     ├── Consistency Loss
-     └── Extrapolation Loss
-          │
-          ▼
-     Recommendation Score
-```
+<p align="center">
+  <img src="assets/architecture.png" alt="MEMOIR architecture diagram" width="640">
+</p>
 
 ---
 
